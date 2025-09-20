@@ -1,5 +1,5 @@
 {
-  "name": K-LAP",
+  "name":"K-LAP ｸﾎﾞﾌｧｸ",
   "short_name": "K-LAP ｸﾎﾞﾌｧｸ",
   "description": "BLEとGPSに対応したラップタイマーアプリです。",
   "start_url": "/index.html",
@@ -21,3 +21,4 @@
   ]
 
 }
+
