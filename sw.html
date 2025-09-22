@@ -3,220 +3,194 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>K-LAP ｸﾎﾞﾌｧｸ</title>
+    <title>GPS対応ストップウォッチ</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
 
-
-<link rel="manifest" href="/manifest.json">
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker registered! Scope:', registration.scope);
-      })
-      .catch(err => {
-        console.log('Service Worker registration failed:', err);
-      });
-  });
-}
-</script>
-
-
-
-
-
-
-
-
-
-
-</head>
-<style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        background-color: #000000;
-        color: #ffffff;
-        padding: 10px;
-        position: relative;
-    }
-
-    #container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: #1c1c1e;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        padding: 20px;
-        max-width: 100%;
-        margin: 20px auto;
-        width: 100%;
-        box-sizing: border-box;
-        height: 100%;
-        position: relative;
-    }
-    
-    #main-content {
-        display: flex;
-        width: 100%;
-        gap: 20px;
-        align-items: flex-start;
-        justify-content: space-between;
-        flex-grow: 1;
-        margin-bottom: 20px;
-    }
-
-    #time-display-column {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex-grow: 1;
-    }
-
-    #lap-list-column {
-        display: flex;
-        flex-direction: column;
-        width: 400px;
-        flex-shrink: 0;
-    }
-    
-    #display1 {
-        font-size: 90px;
-        font-weight: bold;
-        color: #eeeeee;
-        margin-bottom: 5px;
-    }
-
-    #display {
-        font-size: 60px;
-        font-weight: bold;
-        color: #cccccc;
-        margin-bottom: 10px;
-    }
-
-    #lap_list {
-        width: 100%;
-        height: 200px;
-        overflow-y: auto;
-        border: none;
-        border-radius: 5px;
-        background-color: #1c1c1e;
-        padding: 10px;
-    }
-
-    #lap_list div {
-        font-size: 2.0em;
-        margin-bottom: 5px;
-        color: #dddddd;
-    }
-
-    #buttons-row {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-        gap: 15px;
-        padding-top: 10px;
-    }
-
-    .button {
-        border: 1px solid #3a3a3c;
-        background-color: #2c2c2e;
-        padding: 10px 15px;
-        color: #ffffff;
-        font-size: 16px;
-        font-weight: 500;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        text-align: center;
-        flex-grow: 1;
-    }
-    
-    .button:hover { background-color: #4a4a4e; }
-    #start:active { background-color: #4a804a; }
-    #reset:active { background-color: #993333; }
-    #lap:active { background-color: #4a4a4e; }
-    
-    .no-setting { background-color: #ff4d4d; }
-    .no-setting:hover { background-color: #ff6666; }
-    .no-setting:active { background-color: #e64444; }
-
-    .no-gps { background-color: #ff4d4d; }
-    .no-gps:hover { background-color: #ff6666; }
-    .no-gps:active { background-color: #e64444; }
-    
-    .active-blue { background-color: #007aff; }
-    .active-blue:hover { background-color: #3399ff; }
-    .active-blue:active { background-color: #0066cc; }
-
-    #debug-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: transparent;
-        color: #ffffff;
-        padding: 10px;
-        border-radius: 5px;
-        z-index: 1000;
-        font-size: 14px;
-        line-height: 1.5;
-        width: 100%;
-        box-sizing: border-box;
-        pointer-events: none;
-        opacity: 0; /* 修正:透過度を追加 */
-    }
-    .status-text {
-        text-align: left;
-        margin: 0;
-    }
-    #debug-overlay #debugInfo {
-        margin-top: 5px;
-    }
-    
-    @media (max-width: 480px) {
-        #main-content {
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-        }
-        #time-display-column, #lap-list-column {
-            width: 100%;
-            align-items: center;
-        }
-        #buttons-row {
-            flex-direction: row;
-            flex-wrap: wrap;
             justify-content: center;
-            width: 100%;
+            min-height: 100vh;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 10px;
+            position: relative;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            background: #1c1c1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            padding: 20px;
+            max-width: 100%;
+            margin: 20px auto;
+            width: 100%;
+            box-sizing: border-box;
+            height: 100%;
+            position: relative;
         }
-        .button {
-            width: auto;
+        
+        #main-content {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: space-between;
             flex-grow: 1;
-            padding: 10px 8px;
-            font-size: 14px;
+            margin-bottom: 20px;
         }
-        #display1 { font-size: 40px; }
-        #display { font-size: 25px; }
+
+        #time-display-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex-grow: 1;
+        }
+
+        #lap-list-column {
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            flex-shrink: 0;
+        }
+        
+        #display1 {
+            font-size: 90px;
+            font-weight: bold;
+            color: #eeeeee;
+            margin-bottom: 5px;
+        }
+
+        #display {
+            font-size: 60px;
+            font-weight: bold;
+            color: #cccccc;
+            margin-bottom: 10px;
+        }
+
+        #lap_list {
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            border: none;
+            border-radius: 5px;
+            background-color: #1c1c1e;
+            padding: 10px;
+        }
+
         #lap_list div {
-            font-size: 1.6em;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            color: #dddddd;
         }
+
+        #buttons-row {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            gap: 15px;
+            padding-top: 10px;
+        }
+
+        .button {
+            border: 1px solid #3a3a3c;
+            background-color: #2c2c2e;
+            padding: 10px 15px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .button:hover { background-color: #4a4a4e; }
+        #start:active { background-color: #4a804a; }
+        #reset:active { background-color: #993333; }
+        #lap:active { background-color: #4a4a4e; }
+        
+        .no-setting { background-color: #ff4d4d; }
+        .no-setting:hover { background-color: #ff6666; }
+        .no-setting:active { background-color: #e64444; }
+
+        .no-gps { background-color: #ff4d4d; }
+        .no-gps:hover { background-color: #ff6666; }
+        .no-gps:active { background-color: #e64444; }
+        
+        .active-blue { background-color: #007aff; }
+        .active-blue:hover { background-color: #3399ff; }
+        .active-blue:active { background-color: #0066cc; }
+
         #debug-overlay {
-            width: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 14px;
+            line-height: 1.5;
+            width: 100%;
+            box-sizing: border-box;
+            pointer-events: none;
+            opacity: 0;
         }
-    }
-</style>
+        .status-text {
+            text-align: left;
+            margin: 0;
+        }
+        #debug-overlay #debugInfo {
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            #main-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            #time-display-column, #lap-list-column {
+                width: 100%;
+                align-items: center;
+            }
+            #buttons-row {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                align-items: center;
+            }
+            .button {
+                width: auto;
+                flex-grow: 1;
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+            #display1 { font-size: 40px; }
+            #display { font-size: 25px; }
+            #lap_list div {
+                font-size: 1.6em;
+            }
+            #debug-overlay {
+                width: auto;
+            }
+        }
+    </style>
+</head>
 
 <body>
 <div id="container">
@@ -228,7 +202,7 @@ if ('serviceWorker' in navigator) {
     <div id="main-content">
         <div id="time-display-column">
             <div id='display1'>00:00.000</div>
-            <div id='display'>00:00.000</div>
+            <div id='display'>00:00:00.000</div>
         </div>
         <div id="lap-list-column">
             <div id='lap_list'></div>
@@ -282,16 +256,39 @@ let LAP_LINE_P1 = { lat: 0, lon: 0 };
 let LAP_LINE_P2 = { lat: 0, lon: 0 };
 
 // --- ストップウォッチ関連の関数 ---
-const timePrint = (time) => {
-    let m = Math.floor(time / 60000); let s = Math.floor(time % 60000 / 1000); let ms = Math.floor(time % 1000); m = ('0' + m).slice(-2); s = ('0' + s).slice(-2); ms = ('00' + ms).slice(-3);
-    if (elem.display) elem.display.textContent = `${m}:${s}.${ms}`;
+// 修正: 全体の経過時間表示（時:分:秒.ミリ秒）
+const totalTimePrint = (time) => {
+    let h = Math.floor(time / 3600000);
+    let m = Math.floor((time % 3600000) / 60000);
+    let s = Math.floor((time % 60000) / 1000);
+    let ms = Math.floor(time % 1000);
+    
+    h = ('0' + h).slice(-2);
+    m = ('0' + m).slice(-2);
+    s = ('0' + s).slice(-2);
+    ms = ('00' + ms).slice(-3);
+    
+    if (elem.display) elem.display.textContent = `${h}:${m}:${s}.${ms}`;
+};
+
+// 修正: リアルタイムラップとラップ履歴の表示（分:秒.ミリ秒）
+const lapTimeToString = (time) => {
+    let m = Math.floor(time / 60000);
+    let s = Math.floor(time % 60000 / 1000);
+    let ms = Math.floor(time % 1000);
+    
+    m = ('0' + m).slice(-2);
+    s = ('0' + s).slice(-2);
+    ms = ('00' + ms).slice(-3);
+    
+    return `${m}:${s}.${ms}`;
 };
 
 const countUp = () => {
     countUpTimerId = requestAnimationFrame(() => {
         const now = Date.now();
         const elapsedTime = now - startTime;
-        timePrint(elapsedTime);
+        totalTimePrint(elapsedTime);
         countUp();
     });
 };
@@ -301,22 +298,18 @@ const startRealtimeLap = () => {
         lapTimerId = requestAnimationFrame(() => {
             const now = Date.now();
             const lapElapsedTime = now - lapStartTime;
-            const lapDisplay = timeToString(lapElapsedTime);
+            const lapDisplay = lapTimeToString(lapElapsedTime); // 修正
             if (elem.display1) elem.display1.textContent = lapDisplay;
             startRealtimeLap();
         });
     }
 };
 
-const timeToString = (time) => {
-    let m = Math.floor(time / 60000); let s = Math.floor(time / 1000) % 60; let ms = Math.floor(time % 1000); m = ('0' + m).slice(-2); s = ('0' + s).slice(-2); ms = ('00' + ms).slice(-3); return `${m}:${s}.${ms}`;
-};
-
 const lapTimePrint = (time) => { 
-    const lapDuration = timeToString(time);
+    const lapDuration = lapTimeToString(time); // 修正
     const lapDiv = document.createElement('div');
     lapDiv.textContent = `[${lapCount}] ${lapDuration}`; 
-    lapDiv.style.fontSize = '2.0em';
+    lapDiv.style.fontSize = '2.5em';
     if (elem.lap_list) {
         elem.lap_list.insertBefore(lapDiv, elem.lap_list.firstChild);
     }
@@ -395,9 +388,9 @@ const clickResetSW = () => {
     if (lapFixedDisplayTimeoutId) {
         clearTimeout(lapFixedDisplayTimeoutId);
     }
-    timePrint(0);
+    totalTimePrint(0); // 修正
     if (elem.lap_list) elem.lap_list.innerHTML = '';
-    if (elem.display1) elem.display1.textContent = '00:00.000';
+    if (elem.display1) elem.display1.textContent = '00:00.000'; // 修正
     updateButtonDisplay();
     
     stopGps();
@@ -427,7 +420,7 @@ function startGps() {
         { "enableHighAccuracy": true, "timeout": 20000, "maximumAge": 0 }
     );
     isGpsRunning = true;
-    elem.gpsButton.textContent = 'GPS'; /* 修正 */
+    elem.gpsButton.textContent = 'GPS';
     elem.gpsButton.classList.remove('no-gps');
     elem.gpsButton.classList.add('active-blue');
 }
@@ -438,7 +431,7 @@ function stopGps() {
         gpsWatchId = null;
         isGpsRunning = false;
         elem.statusDisplay.textContent = 'GPS監視停止';
-        elem.gpsButton.textContent = 'GPS'; /* 修正 */
+        elem.gpsButton.textContent = 'GPS';
         elem.gpsButton.classList.remove('active-blue');
         elem.gpsButton.classList.add('no-gps');
     }
@@ -546,7 +539,7 @@ function onGpsPositionUpdate(position) {
         lapTimePrint(lapDuration); 
         
         cancelAnimationFrame(lapTimerId);
-        if (elem.display1) elem.display1.textContent = timeToString(lapDuration);
+        if (elem.display1) elem.display1.textContent = lapTimeToString(lapDuration); // 修正
 
         if (lapFixedDisplayTimeoutId) {
              clearTimeout(lapFixedDisplayTimeoutId);
@@ -575,7 +568,17 @@ function onGpsError(error) {
     stopGps();
 }
 
-window.onload = function() {
+window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
+
     elem.display = document.getElementById('display');
     elem.display1 = document.getElementById('display1');
     elem.lap_list = document.getElementById('lap_list');
@@ -594,12 +597,10 @@ window.onload = function() {
     if (elem.getSettingsBtn) elem.getSettingsBtn.addEventListener('click', getSettings);
     
     updateButtonDisplay();
-    timePrint(0);
+    totalTimePrint(0); // 修正
+    if (elem.display1) elem.display1.textContent = '00:00.000'; // 修正
     getSettings();
-};
+});
 </script>
 </body>
-
 </html>
-
-
